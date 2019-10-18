@@ -1,0 +1,158 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{url}
+\usepackage{hyperref}
+
+\input maths
+
+\hoffset 0in
+\oddsidemargin 0in
+\voffset -0.4in
+\topmargin 0in
+\headheight 12pt
+\headsep 0,5in
+
+\marginparwidth 50pt
+\marginparsep 5pt
+\reversemarginpar
+
+
+\textwidth 6.5in
+\displaywidth 6.5in
+\textheight 240mm
+\parindent 0mm
+\parskip \baselineskip
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newcommand{\heading}[1]{\vspace{2ex}\section*{#1}}
+\newcommand{\refsection}[1]{Section \ref{#1}}
+
+
+\begin{document}
+
+\title{ \bf ENEL464 Embedded Software and Advanced Computing 2019 \\ Group Assignment 2}
+\author{Michael Hayes}
+\date{}
+\maketitle
+
+
+\section{Introduction}
+
+The purpose of this assignment is to implement a numerical algorithm
+on a desktop computer to make the most efficient use of its caches and
+multiple cores.
+
+The algorithm is Jacobi relaxation.  This is an iterative algorithm
+used to approximate differential equations, for example, Poisson's and
+Laplace's equations.  Poisson's equation can be used to find the
+electric potential given a specified charge distribution or
+temperature given a specified heat source.  There are more efficient
+ways to solve this problem using Green's functions and Fourier
+transforms but that is not the purpose of this assignment.
+
+\section{Jacobi relaxation}
+
+The discrete form of Poisson's equation,
+%
+\begin{equation}
+  \nabla^2 V_{i,j,k,n} = f_{i,j,k,n},
+\end{equation}
+%
+can be solved iteratively using Jacobi relaxation, where
+%
+\begin{equation}
+  V_{i,j,k,n+1} = \frac{1}{6}\encp{V_{i+1,j,k,n} + V_{i-1,j,k,n} + V_{i,j+1,k,n} + V_{i,j-1,k,n} + V_{i,j,k+1,n} + V_{i,j,k-1,n} - \Delta^2 f_{i,j,k}}.
+\label{eqn:Jacobi}
+\end{equation}
+%
+Here $\Delta = \Delta x = \Delta y = \Delta z$ is the spacing between
+voxels in metres, $0 \le i < N$, $0 \le j < N$, and $0 \le k < N$.
+Voxels on the boundary ($i = -1$, $i=N$, $j = -1$, $j=N$, $k = -1$,
+$k=N$) have a value $V_{\mathrm{bound}}$.  This is a Dirichlet
+boundary condition, equivalent to enclosing the problem in a metal box
+at potential $V_{\mathrm{bound}}$.
+
+\section{Implementation}
+
+Implement an algorithm for Jacobi relaxation in either C or C++.  Your
+goal is to find a fast implementation that will run on a CAE lab
+computer, making best use of the caches and multiple cores.
+
+Your implementation needs to work with an arbitrary 3-D source
+distribution $f$.  The potential $V$ needs to be stored as a double
+data type.
+
+
+
+\section{Testing}
+
+Test your algorithm with a single point charge in the centre of the
+volume, i.e.,
+%
+\begin{equation}
+  f_{i,j,k} = \left\{
+  \begin{array}{ll}
+    1 & i=N/2, j=N/2, k=N/2, \\
+    0 & \mbox{otherwise}
+  \end{array}\right.,
+\end{equation}
+%
+where the volume is comprised of $N \times N \times N$ voxels.  Note,
+you algorithm must work with arbitrary source distributions.
+
+
+
+%% There is a simple explanation of the 2-D algorithm at
+%% \url{https://blogs.msdn.microsoft.com/visualizeparallel/2010/03/29/the-jacobi-relaxation-an-instance-of-data-parallelism/}
+
+\section{Support}
+
+Only questions submitted via the ENCE464 assignment forum will be
+answered.  Emails will be quietly ignored.
+
+
+\section{Reports}
+
+The reports are to be submitted as PDF documents through the ENCE464
+Learn page.  They will be submitted to TurnItIn for plagiarism
+checking.
+
+Guidelines for writing a report are available at\\
+\url{https://eng-git.canterbury.ac.nz/mph/report-guidelines/blob/master/report-guidelines.pdf}.
+
+Each report is to use a 12 point font and be no longer than four
+pages, including appendices.
+
+%Ensure in your report that you discuss your implementation in terms of
+%cache usage and core usage.  You should present profiling information
+%showing which parts of your program takes the most time to execute.
+
+Your report will be marked in terms of:
+%
+\begin{itemize}
+\item Written style
+\item Presentation
+\item Cache analysis
+\item Multithreading analysis
+\item Profiling analysis 
+\item Optimisation analysis
+\item Overall excellence  
+\end{itemize}
+
+Your report should present the average time and standard deviation of
+the time to run 500 iterations of your implementation for $N=101, 201,
+301, 401, 501, 601, 701, 801, 901$.
+
+%% Bonus marks will be awarded for implementations that handle Neumann
+%% boundary conditions on each boundary.  This is equivalent to an
+%% insulating layer on the boundary.
+
+
+\section{Code}
+
+You must submit your code as a \code{.zip} file so it can be checked
+for numerical accuracy and plagiarism.  Your fastest implementation
+must be able to built by running \code{make}.
+
+
+\end{document}
